@@ -1,16 +1,16 @@
 version: '3'
 services:
   squid:
-    image: "squid4"
+    image: "fornova/squid"
     network_mode: bridge
     volumes:
       - "/srv/squid/cache:/var/cache/squid4" # assumed current dir contains browsers.json
       - "/etc/ssl/certs:/etc/ssl/certs:ro"
-      - "$PWD/certs/myCA.pem:/local-mitm.pem:ro"
-      - "$PWD/certs/myCA.crt:/local-mitm.crt:ro"
-      - "$PWD/squid.conf:/etc/squid4/squid.conf"
-      - "$PWD/proxychains.conf:/etc/proxychains.conf"
-      - "$PWD/rewrite_url.py:/rewrite_url.py"
+      - "./certs/myCA.pem:/local-mitm.pem:ro"
+      - "./certs/myCA.crt:/local-mitm.crt:ro"
+      - "./squid/squid.conf:/etc/squid4/squid.conf"
+      - "./squid/proxychains.conf:/etc/proxychains.conf"
+      - "./squid/rewrite_url.py:/rewrite_url.py"
     links:
       - haproxy
     environment:
@@ -18,18 +18,28 @@ services:
       - MITM_KEY=/local-mitm.pem
       - MITM_PROXY=yes
       - CONFIG_DISABLE=yes
-      - PROXYCHAIN=yes
+#      - PROXYCHAIN=yes
 #      - PROXYCHAIN_TYPE=static_chain
 #      - PROXYCHAIN_PROXY=http 172.17.0.1 8013
     ports:
       - "3128:3128"
+      - "3129:3129"
+    cap_add:
+      - ALL
+    cap_drop:
+      - NET_ADMIN
+      - SYS_ADMIN
+    privileged: true
 
   haproxy:
-    image: "haproxy-selenoid"
+    image: "fornova/haproxy"
     network_mode: bridge
+    privileged: true
     volumes:
-      - "/var/log:/dev/log"
-      - "$PWD:/usr/local/etc/haproxy"
-      - "$PWD/certs/haproxy.pem:/etc/ssl/haproxy.pem:ro"
+      - "/var/log:/var/log"
+      - "./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg"
+      - "./certs/haproxy.pem:/usr/local/etc/haproxy/haproxy.pem"
     ports:
       - "8013:8013"
+      - "8014:8014"
+    #command: cat /usr/local/etc/haproxy/haproxy.pem

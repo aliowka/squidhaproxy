@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-docker build -t squid4 .
+docker build -t fornova-squid4 .
