@@ -18,7 +18,7 @@ services:
       - MITM_KEY=/local-mitm.pem
       - MITM_PROXY=yes
       - CONFIG_DISABLE=yes
-#      - PROXYCHAIN=yes
+      - PROXYCHAIN=yes
 #      - PROXYCHAIN_TYPE=static_chain
 #      - PROXYCHAIN_PROXY=http 172.17.0.1 8013
     ports:
@@ -38,8 +38,9 @@ services:
     volumes:
       - "/var/log:/var/log"
       - "./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg"
-      - "./certs/haproxy.pem:/usr/local/etc/haproxy/haproxy.pem"
+      - "./certs/myCA.pem:/usr/local/etc/haproxy/haproxy.pem"
     ports:
       - "8013:8013"
       - "8014:8014"
+      - "9000:9000"
     #command: cat /usr/local/etc/haproxy/haproxy.pem
